@@ -4,12 +4,12 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-
-const ReelUpload = () => {
+const ReelUpload = ({ itineraryId = null }) => {
   const navigate = useNavigate();
   const [itineraries, setItineraries] = useState([]);
-  const [formData, setFormData] = useState({ itinerary: "", video: null });
+  const [formData, setFormData] = useState({ itinerary: itineraryId || "", video: null });
   const [reels, setReels] = useState([]);
+  const apiBase = process.env.REACT_APP_API_BASE;
 
   useEffect(() => {
     const token = localStorage.getItem("auth_token");
@@ -19,14 +19,18 @@ const ReelUpload = () => {
       return;
     }
 
-    axios.get("http://127.0.0.1:8000/api/itineraries/")
-      .then((res) => setItineraries(res.data))
-      .catch((err) => console.error("Error fetching itineraries:", err));
+    if (!itineraryId) {
+      axios
+        .get(`${apiBase}itineraries/`)
+        .then((res) => setItineraries(res.data))
+        .catch((err) => console.error("Error fetching itineraries:", err));
+    }
 
-    axios.get("http://127.0.0.1:8000/api/reels/")
+    axios
+      .get(`${apiBase}reels/${itineraryId ? `?itinerary=${itineraryId}` : ""}`)
       .then((res) => setReels(res.data))
       .catch((err) => console.error("Error fetching reels:", err));
-  }, [navigate]);
+  }, [navigate, apiBase, itineraryId]);
 
   const handleChange = (e) => {
     if (e.target.name === "video") {
@@ -38,20 +42,21 @@ const ReelUpload = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
     const data = new FormData();
     data.append("itinerary", formData.itinerary);
     data.append("video", formData.video);
 
-    axios.post("http://127.0.0.1:8000/api/reels/", data, {
-      headers: { "Content-Type": "multipart/form-data" },
-    })
+    axios
+      .post(`${apiBase}reels/`, data, {
+        headers: { "Content-Type": "multipart/form-data" },
+      })
       .then(() => {
         toast.success("🎉 Reel uploaded successfully!");
-        setFormData({ itinerary: "", video: null });
+        setFormData({ itinerary: itineraryId || "", video: null });
         document.getElementById("reel-upload-form").reset();
 
-        axios.get("http://127.0.0.1:8000/api/reels/")
+        axios
+          .get(`${apiBase}reels/${itineraryId ? `?itinerary=${itineraryId}` : ""}`)
           .then((res) => setReels(res.data));
       })
       .catch((error) => {
@@ -64,25 +69,31 @@ const ReelUpload = () => {
     <div className="max-w-xl mx-auto bg-white dark:bg-gray-800 p-6 rounded shadow-md">
       <h2 className="text-2xl font-semibold mb-4">Upload Reel</h2>
       <form onSubmit={handleSubmit} className="space-y-4" id="reel-upload-form">
+        {!itineraryId && (
+          <div>
+            <label htmlFor="itinerary" className="block font-medium mb-1">
+              Select Itinerary
+            </label>
+            <select
+              name="itinerary"
+              value={formData.itinerary}
+              onChange={handleChange}
+              className="w-full border px-3 py-2 rounded"
+              required
+            >
+              <option value="">-- Choose --</option>
+              {itineraries.map((item) => (
+                <option key={item.id} value={item.id}>
+                  {item.title} ({item.destination})
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
         <div>
-          <label htmlFor="itinerary" className="block font-medium mb-1">Select Itinerary</label>
-          <select
-            name="itinerary"
-            value={formData.itinerary}
-            onChange={handleChange}
-            className="w-full border px-3 py-2 rounded"
-            required
-          >
-            <option value="">-- Choose --</option>
-            {itineraries.map((item) => (
-              <option key={item.id} value={item.id}>
-                {item.title} ({item.destination})
-              </option>
-            ))}
-          </select>
-        </div>
-        <div>
-          <label htmlFor="video" className="block font-medium mb-1">Upload Video</label>
+          <label htmlFor="video" className="block font-medium mb-1">
+            Upload Video
+          </label>
           <input
             type="file"
             name="video"
@@ -105,7 +116,11 @@ const ReelUpload = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {reels.map((reel) => (
           <div key={reel.id}>
-            <video controls width="100%" src={`http://127.0.0.1:8000${reel.video}`} />
+            <video
+              controls
+              width="100%"
+              src={`${apiBase.replace("/api/", "")}${reel.video}`}
+            />
           </div>
         ))}
       </div>
