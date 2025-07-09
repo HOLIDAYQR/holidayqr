@@ -12,15 +12,19 @@ const ItineraryList = () => {
     duration: "",
   });
 
+  const apiBase = process.env.REACT_APP_API_BASE;
+
   useEffect(() => {
     axios
-      .get("http://127.0.0.1:8000/api/itineraries/")
+      .get(`${apiBase}itineraries/`)
       .then((response) => {
         setItineraries(response.data);
         setFilteredItineraries(response.data);
       })
-      .catch((error) => console.error("Error fetching itineraries:", error));
-  }, []);
+      .catch((error) =>
+        console.error("Error fetching itineraries:", error.message || error)
+      );
+  }, [apiBase]);
 
   const handleFilterChange = (e) => {
     setFilters({ ...filters, [e.target.name]: e.target.value });
@@ -36,16 +40,22 @@ const ItineraryList = () => {
     }
 
     if (filters.minPrice) {
-      result = result.filter((item) => parseFloat(item.price) >= parseFloat(filters.minPrice));
+      result = result.filter(
+        (item) => parseFloat(item.price) >= parseFloat(filters.minPrice)
+      );
     }
 
     if (filters.maxPrice) {
-      result = result.filter((item) => parseFloat(item.price) <= parseFloat(filters.maxPrice));
+      result = result.filter(
+        (item) => parseFloat(item.price) <= parseFloat(filters.maxPrice)
+      );
     }
 
     if (filters.duration) {
       const [minDur, maxDur] = filters.duration.split("-").map(Number);
-      result = result.filter((item) => item.duration_days >= minDur && item.duration_days <= maxDur);
+      result = result.filter(
+        (item) => item.duration_days >= minDur && item.duration_days <= maxDur
+      );
     }
 
     setFilteredItineraries(result);
