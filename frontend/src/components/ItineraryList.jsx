@@ -119,7 +119,7 @@ const ItineraryList = () => {
               <p className="text-gray-700">Price: ₹ {item.price}</p>
               <p className="text-gray-700">Duration: {item.duration_days} days</p>
               <Link
-                to={`/itinerary/${item.slug}`}
+                to={`/itinerary/${item.id}`}
                 className="inline-block mt-3 text-blue-600 hover:underline"
               >
                 View Details →
