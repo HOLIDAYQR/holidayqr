@@ -6,17 +6,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = 'django-insecure--)b-(^56yrp((#um+ltr7k5gi@o&n%4vqixrb=8)0u*y9t4lc-'
 
-DEBUG = False  # ❗ Always False for production
+DEBUG = False
 
 ALLOWED_HOSTS = [
     'holidayqr-backend.onrender.com',
     'www.holidayqr.com',
-    'holidayqr.com',
     'localhost',
     '127.0.0.1'
 ]
 
-# ✅ Application Definition
 INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
@@ -61,7 +59,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
-# ✅ Database (SQLite for now)
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -81,7 +78,6 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
 
-# ✅ Static/Media Config
 STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
 
@@ -89,20 +85,12 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-# ✅ Final & Correct CORS Configuration
+# ✅ CORS Settings
 CORS_ALLOWED_ORIGINS = [
     "https://www.holidayqr.com",
 ]
 CORS_ALLOW_CREDENTIALS = True
-CORS_ALLOW_HEADERS = list(default_headers) + [
-    "access-control-allow-origin",
-    "X-CSRFToken",
-    "Content-Type",
-]
-
-CORS_EXPOSE_HEADERS = [
-    "Content-Type",
-    "X-CSRFToken",
-]
+CORS_ALLOW_HEADERS = list(default_headers) + ['access-control-allow-origin']
+CORS_ALLOW_ALL_ORIGINS = False  # ✅ Explicitly disallow wildcard
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
