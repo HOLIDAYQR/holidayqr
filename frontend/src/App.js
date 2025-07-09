@@ -4,6 +4,8 @@ import ItineraryList from "./components/ItineraryList";
 import ItineraryDetail from "./components/ItineraryDetail";
 import ReelUpload from "./components/ReelUpload";
 import FakeLogin from "./components/FakeLogin";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function App() {
   return (
@@ -37,6 +39,9 @@ function App() {
             Toggle Dark Mode
           </button>
         </div>
+
+        {/* ✅ Toast notifications */}
+        <ToastContainer position="top-right" autoClose={3000} />
       </div>
     </Router>
   );
