@@ -1,20 +1,21 @@
 from pathlib import Path
 import os
+from corsheaders.defaults import default_headers  # ✅ Required for custom CORS headers
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = 'django-insecure--)b-(^56yrp((#um+ltr7k5gi@o&n%4vqixrb=8)0u*y9t4lc-'
 
-DEBUG = True
+DEBUG = False  # ⚠️ Always keep False in production
 
-ALLOWED_HOSTS = ['*']  # Use ['holidayqr-backend.onrender.com'] in production
+ALLOWED_HOSTS = ['holidayqr-backend.onrender.com', 'www.holidayqr.com', 'localhost', '127.0.0.1']
 
-# Application definition
+# ✅ Installed Apps
 INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
     'core',
-    'whitenoise.runserver_nostatic',  # ✅ Required by Whitenoise
+    'whitenoise.runserver_nostatic',  # ✅ For serving static files
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -23,9 +24,10 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 ]
 
+# ✅ Middleware
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',  # ✅ Whitenoise for static file handling
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -54,6 +56,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
+# ✅ SQLite Database
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -61,6 +64,7 @@ DATABASES = {
     }
 }
 
+# ✅ Password Validators
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -76,12 +80,13 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# ✅ Internationalization
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
 
-# ✅ Static and media configuration
+# ✅ Static and Media Files
 STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
 
@@ -89,7 +94,14 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-# ✅ Enable CORS for all domains (adjust in production)
-CORS_ALLOW_ALL_ORIGINS = True
+# ✅ CORS (Cross-Origin Resource Sharing) Settings
+CORS_ALLOWED_ORIGINS = [
+    "https://www.holidayqr.com",
+]
+CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_HEADERS = list(default_headers) + [
+    'access-control-allow-origin',
+]
 
+# ✅ Auto Field Setting
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
